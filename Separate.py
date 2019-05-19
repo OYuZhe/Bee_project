@@ -3,7 +3,7 @@
 import os
 import shutil
 import json
-
+import math
 
 #dump :write json data to file
 #load :load json data from file
@@ -56,9 +56,12 @@ if __name__ == '__main__':
 	'''
 	print("Start to makes directories for all Category in ./image/")
 	#the folder that you want to save separate data
-	mkFolder = "./image/"
+	TrainFolder = "./image/train/"
+	TestFolder = "./image/test/"
 	for key in Category:
-		FolderName = mkFolder + Category[key]
+		FolderName = TrainFolder + Category[key]
+		mkdir(FolderName)
+		FolderName = TestFolder + Category[key]
 		mkdir(FolderName)
 	print("Make Finish")
 	
@@ -68,23 +71,40 @@ if __name__ == '__main__':
 	folder = "./eccv_18_cropped/"
 	Filenames = os.listdir(folder)
 	print('Number of image:', len(Filenames))
+	train = math.ceil(len(Filenames)*0.8)
+	test = int(len(Filenames)*0.2)
+	
+	print("Length of train data",train)
+	print("Length of test  data",test)
 	
 	#Start separate
 	#search image_id in ['images'] and then find the category_id in ['annotations']
 	#if the image have multi-categories ,then use the first category it search
 	print ("Start to separate image for",NumOfCategory,"Category")
 	Annotationslen = len(MyJson['annotations'])
-	for i in range(0,len(Filenames)):
+	for i in range(0,train):
 		image_id = MyJson['images'][i]['id']
 		for j in range(0,Annotationslen):
 			if image_id == MyJson['annotations'][j]['image_id']:
 				category_id = MyJson['annotations'][j]['category_id']
 				category_name = Category[category_id]
 				image_location = folder + image_id + ".jpg"
-				destination = mkFolder + category_name
+				destination = TrainFolder + category_name
 				shutil.copy(image_location,destination)
 				#shutil.move(image_location,destination)
-				#print(i,image_id,category_name)
+				print(i,'%22s'%destination,category_name)
+				break;
+	for i in range(train,len(Filenames)):
+		image_id = MyJson['images'][i]['id']
+		for j in range(0,Annotationslen):
+			if image_id == MyJson['annotations'][j]['image_id']:
+				category_id = MyJson['annotations'][j]['category_id']
+				category_name = Category[category_id]
+				image_location = folder + image_id + ".jpg"
+				destination = TestFolder + category_name
+				shutil.copy(image_location,destination)
+				#shutil.move(image_location,destination)
+				print(i,'%22s'%destination,category_name)
 				break;
 	print("Finish")
 
