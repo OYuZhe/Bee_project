@@ -15,37 +15,7 @@ def WriteLog(log):
 		for i in range(0,len(log)):
 			f.write(log[i]+'\n')
 
-			
-#use all data ,then separate data to train and test			
-def svm(Feature,Label):
-	
-	print("start to creat svm model")
-	#separate Feature and Label for train and test
-	X_train, X_test, y_train, y_test = train_test_split(Feature, Label, test_size=0.2, random_state=0)
-	parameters = [{'kernel': ['rbf'], 'gamma': [1e-2,1e-3, 1e-4,1e-5],'C': [0.1,1, 10, 100, 1000]},
-				  {'kernel': ['linear'], 'C': [0.1,1, 10, 100, 1000]}]
 
-	#make model
-	Svm_Model = SVC(gamma='scale',verbose=False,decision_function_shape='ovo').fit(X_train, Y_train)
-	
-	#evaluate model
-	accuracy = Svm_Model.score(X_test, Y_test)	   
-	print("Accuracy:",accuracy)
-	
-	#count how many predicts are false
-	predicted = Svm_Model.predict(X_test)
-	error = 0
-	for i  in range(0,len(Y_test)):
-		if predicted[i] != Y_test[i]:
-			error+=1
-	print("Error:",error)
-	
-	log=[]
-	log.append("Accuracy:"+str(accuracy))
-	log.append("Error:"+str(error))
-	WriteLog(log)
-	
-#use train data to creat model ,and save model to evaluate test data
 def svm_cv(Feature,Label,Alldata):
 
 	log=[]
@@ -123,8 +93,6 @@ if __name__ == '__main__':
 	
 	Alldata = False
 	svm_cv(Feature,Label,Alldata)
-	#svm(Feature,Label)
-	
 	
 	
 	
